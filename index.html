@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Retirement Income Maximizer</title>
+<style>
+  :root{
+    --bg:#0c1322; --panel:#131d31; --panel2:#1b2942; --line:#27375a;
+    --txt:#e8eef9; --muted:#93a3c4; --accent:#4ea1ff; --accent2:#36d399;
+    --warn:#fbbf24; --bad:#f87171; --good:#34d399;
+    --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 70% -10%,#16263f 0%,var(--bg) 55%);
+    color:var(--txt); line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:32px 20px 80px}
+  header h1{font-size:28px; margin:0 0 6px; letter-spacing:-.3px}
+  header p{color:var(--muted); margin:0; max-width:680px}
+  .tabs{display:flex; gap:8px; margin:28px 0 22px; flex-wrap:wrap}
+  .tab{
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    padding:10px 16px; border-radius:999px; cursor:pointer; font-size:14px; font-weight:600;
+    transition:.15s;
+  }
+  .tab:hover{color:var(--txt)}
+  .tab.active{background:var(--accent); border-color:var(--accent); color:#06223f}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px; box-shadow:var(--shadow); margin-bottom:22px}
+  h2{font-size:18px; margin:0 0 4px; letter-spacing:-.2px}
+  .sub{color:var(--muted); font-size:13px; margin:0 0 20px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px}
+  label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--muted); margin-bottom:6px; font-weight:600}
+  input,select{
+    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--txt);
+    padding:11px 12px; border-radius:10px; font-size:15px; outline:none; transition:.15s;
+  }
+  input:focus,select:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(78,161,255,.15)}
+  .hint{font-size:11px; color:var(--muted); margin-top:5px; text-transform:none; letter-spacing:0}
+  .seg{display:flex; gap:6px; flex-wrap:wrap}
+  .seg button{flex:1; min-width:64px; background:var(--panel2); border:1px solid var(--line);
+    color:var(--muted); padding:10px; border-radius:10px; cursor:pointer; font-weight:600; font-size:14px}
+  .seg button.on{background:var(--accent2); border-color:var(--accent2); color:#053524}
+  .out{margin-top:22px}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px}
+  .card{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .card .k{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px}
+  .card .v{font-size:24px; font-weight:700; margin-top:4px}
+  .card.hl{background:linear-gradient(160deg,#13352a,#0f2a36); border-color:#2e6b53}
+  .card.hl .v{color:var(--good)}
+  table{width:100%; border-collapse:collapse; margin-top:18px; font-size:14px}
+  th,td{padding:10px 12px; text-align:right; border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; font-weight:600}
+  tr.best td{background:rgba(52,211,153,.10)}
+  .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:700}
+  .pill.good{background:rgba(52,211,153,.18); color:var(--good)}
+  .pill.warn{background:rgba(251,191,36,.18); color:var(--warn)}
+  .bar{height:10px; background:var(--panel); border-radius:6px; overflow:hidden; margin-top:8px}
+  .bar > div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .note{background:rgba(78,161,255,.08); border:1px solid #244a73; border-radius:10px;
+    padding:14px 16px; font-size:13px; color:#cdddf5; margin-top:20px}
+  .note b{color:#fff}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .disclaimer{color:var(--muted); font-size:12px; margin-top:30px; border-top:1px solid var(--line); padding-top:18px}
+  @media(max-width:560px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Retirement Income Maximizer</h1>
+    <p>Two decisions that lock in lifetime income: <b>delay Social Security to 70</b> to capture the maximum 8%/yr delayed credits, and choose a <b>joint-and-survivor annuity</b> so income continues for your spouse.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="ss">① Social Security — delay to 70</button>
+    <button class="tab" data-tab="js">② Joint &amp; Survivor annuity</button>
+  </div>
+
+  <!-- ================= SOCIAL SECURITY ================= -->
+  <section id="ss">
+    <div class="panel">
+      <h2>Your benefit estimate</h2>
+      <p class="sub">Enter your Primary Insurance Amount (PIA) — the monthly benefit at Full Retirement Age, found on your SSA statement at ssa.gov/myaccount.</p>
+      <div class="grid">
+        <div>
+          <label>Monthly benefit at FRA (PIA)</label>
+          <input id="pia" type="number" value="2400" min="0" step="10" />
+          <div class="hint">$ per month in today's dollars</div>
+        </div>
+        <div>
+          <label>Full Retirement Age</label>
+          <select id="fra">
+            <option value="66">66 (born 1943–1954)</option>
+            <option value="66.166">66 &amp; 2 mo (1955)</option>
+            <option value="66.333">66 &amp; 4 mo (1956)</option>
+            <option value="66.5">66 &amp; 6 mo (1957)</option>
+            <option value="66.666">66 &amp; 8 mo (1958)</option>
+            <option value="66.833">66 &amp; 10 mo (1959)</option>
+            <option value="67" selected>67 (born 1960 or later)</option>
+          </select>
+        </div>
+        <div>
+          <label>Life expectancy (planning age)</label>
+          <input id="life" type="number" value="90" min="71" max="110" step="1" />
+          <div class="hint">How long you expect to collect</div>
+        </div>
+        <div>
+          <label>Annual COLA / discount (optional)</label>
+          <input id="cola" type="number" value="0" min="0" max="6" step="0.5" />
+          <div class="hint">% — leave 0 to compare in today's dollars</div>
+        </div>
+      </div>
+
+      <div class="out">
+        <div class="cards">
+          <div class="card">
+            <div class="k">Claim at 62 (earliest)</div>
+            <div class="v" id="c62">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Claim at FRA</div>
+            <div class="v" id="cfra">—</div>
+          </div>
+          <div class="card hl">
+            <div class="k">Claim at 70 (max) ★</div>
+            <div class="v" id="c70">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Monthly raise: 62 → 70</div>
+            <div class="v" id="craise">—</div>
+          </div>
+        </div>
+
+        <table id="ssTable">
+          <thead>
+            <tr><th>Claim age</th><th>Adjustment</th><th>Monthly</th><th>Annual</th><th>Lifetime total*</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="note" id="ssNote"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JOINT & SURVIVOR ================= -->
+  <section id="js" style="display:none">
+    <div class="panel">
+      <h2>Pension / annuity payout choice</h2>
+      <p class="sub">A single-life payout is largest but stops the day you die. A joint-and-survivor option pays a bit less, but a percentage continues to your spouse for life.</p>
+      <div class="row2">
+        <div>
+          <label>Single-life monthly payout</label>
+          <input id="single" type="number" value="3000" min="0" step="10" />
+          <div class="hint">The maximum option, ends at your death</div>
+        </div>
+        <div>
+          <label>Survivor continuation</label>
+          <div class="seg" id="survSeg">
+            <button data-s="0.5">50%</button>
+            <button data-s="0.75">75%</button>
+            <button class="on" data-s="1">100%</button>
+          </div>
+          <div class="hint">% of your payout the survivor keeps</div>
+        </div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <div>
+          <label>Your age now</label>
+          <input id="ageA" type="number" value="65" min="50" max="90" />
+        </div>
+        <div>
+          <label>Your sex (for life table)</label>
+          <select id="sexA"><option value="m">Male</option><option value="f">Female</option></select>
+        </div>
+        <div>
+          <label>Spouse age now</label>
+          <input id="ageB" type="number" value="63" min="50" max="90" />
+        </div>
+        <div>
+          <label>Spouse sex</label>
+          <select id="sexB"><option value="f">Female</option><option value="m">Male</option></select>
+        </div>
+        <div>
+          <label>Plan reduction factor</label>
+          <input id="redOverride" type="number" placeholder="auto" step="0.5" />
+          <div class="hint">% if your plan states it; blank = estimate</div>
+        </div>
+        <div>
+          <label>Real discount rate</label>
+          <input id="disc" type="number" value="2" min="0" max="6" step="0.5" />
+          <div class="hint">% for present-value</div>
+        </div>
+      </div>
+
+      <div class="out">
+        <div class="cards">
+          <div class="card">
+            <div class="k">Single-life / month</div>
+            <div class="v" id="jSingle">—</div>
+          </div>
+          <div class="card hl">
+            <div class="k">J&amp;S to you / month</div>
+            <div class="v" id="jJoint">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Survivor keeps / month</div>
+            <div class="v" id="jSurv">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Cost of protection</div>
+            <div class="v" id="jCost">—</div>
+          </div>
+        </div>
+
+        <table>
+          <thead><tr><th>Measure</th><th>Single life</th><th>Joint &amp; survivor</th></tr></thead>
+          <tbody id="jsBody"></tbody>
+        </table>
+
+        <div class="note" id="jsNote"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="disclaimer">
+    Educational estimates only — not financial, tax, or legal advice. Social Security factors use SSA's published reduction/delayed-credit rules. Survivor-annuity reductions are actuarial estimates from a Gompertz mortality model; your plan's actual factors govern. Confirm figures with SSA and your plan administrator.
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => '$' + Math.round(n).toLocaleString();
+const fmt2 = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  $('ss').style.display = t.dataset.tab==='ss'?'':'none';
+  $('js').style.display = t.dataset.tab==='js'?'':'none';
+});
+
+/* ============ SOCIAL SECURITY ============ */
+// Factor relative to PIA for a claiming age (years) given FRA (years).
+function ssFactor(age, fra){
+  const months = Math.round((age - fra)*12);
+  if(months === 0) return 1;
+  if(months > 0){
+    // delayed retirement credit: 8%/yr = 2/3% per month, capped at age 70
+    const m = Math.min(months, Math.round((70-fra)*12));
+    return 1 + m * (2/3)/100;
+  }
+  // early reduction: 5/9% per month first 36, 5/12% per month beyond
+  const e = -months;
+  const first = Math.min(e,36);
+  const rest = Math.max(e-36,0);
+  return 1 - (first*(5/9) + rest*(5/12))/100;
+}
+
+function calcSS(){
+  const pia = +$('pia').value || 0;
+  const fra = +$('fra').value;
+  const life = +$('life').value || 90;
+  const cola = (+$('cola').value || 0)/100;
+  const ages = [62,63,64,65,66,67,68,69,70];
+
+  const rows = ages.filter(a=>a>=Math.floor(fra)-5); // keep 62..70
+  // build lifetime totals with COLA growth from claim age to life expectancy
+  const lifetimeOf = (age,monthly)=>{
+    let total=0, m=monthly;
+    for(let y=age; y<life; y++){ total += m*12; m *= (1+cola); }
+    return total;
+  };
+
+  const data = ages.map(a=>{
+    const f = ssFactor(a,fra);
+    const monthly = pia*f;
+    return {a, f, monthly, annual:monthly*12, life:lifetimeOf(a,monthly)};
+  });
+
+  const at62 = data.find(d=>d.a===62);
+  const at70 = data.find(d=>d.a===70);
+  const atFra = data.reduce((p,c)=>Math.abs(c.a-fra)<Math.abs(p.a-fra)?c:p);
+
+  $('c62').textContent  = fmt(at62.monthly);
+  $('cfra').textContent = fmt(atFra.monthly);
+  $('c70').textContent  = fmt(at70.monthly);
+  $('craise').textContent = '+'+fmt(at70.monthly-at62.monthly);
+
+  const best = data.reduce((p,c)=>c.life>p.life?c:p);
+  const tb = $('ssTable').querySelector('tbody');
+  tb.innerHTML = data.map(d=>{
+    const adj = ((d.f-1)*100);
+    const adjTxt = (adj>=0?'+':'') + adj.toFixed(1) + '%';
+    return `<tr class="${d.a===best.a?'best':''}">
+      <td>${d.a}${d.a===70?' <span class="pill good">MAX</span>':''}</td>
+      <td>${adjTxt}</td>
+      <td>${fmt(d.monthly)}</td>
+      <td>${fmt(d.annual)}</td>
+      <td>${fmt(d.life)} ${d.a===best.a?'<span class="pill good">highest</span>':''}</td>
+    </tr>`;
+  }).join('');
+
+  // breakeven: 70 vs 62 (no COLA / today's dollars approximation)
+  const monthlyGain = at70.monthly - at62.monthly;
+  const forgone = at62.monthly * (70-62)*12; // checks collected 62->70
+  const beMonths = monthlyGain>0 ? forgone/monthlyGain : 0;
+  const beAge = 70 + beMonths/12;
+  const extra70 = at70.life - at62.life;
+
+  $('ssNote').innerHTML =
+    `<b>Why delay?</b> Each year you wait past your FRA adds <b>8%</b> permanent, inflation-adjusted income — there is no investment that guarantees that. Waiting from 62 to 70 raises your check by <b>${((at70.monthly/at62.monthly-1)*100).toFixed(0)}%</b> (${fmt(at62.monthly)} → ${fmt(at70.monthly)}).<br><br>` +
+    `<b>Break-even:</b> delaying from 62 to 70 pays off by about <b>age ${beAge.toFixed(0)}</b>. ` +
+    (life>=beAge
+      ? `Planning to live to ${life}, delaying to 70 yields about <b>${fmt(extra70)}</b> more lifetime${cola>0?' (COLA-adjusted)':''} — the higher base also lifts every future COLA and your survivor's benefit.`
+      : `If you truly expect to live only to ${life}, claiming earlier may collect more — but delaying still buys the best longevity &amp; survivor insurance.`);
+}
+
+['pia','fra','life','cola'].forEach(id=>$(id).addEventListener('input',calcSS));
+
+/* ============ JOINT & SURVIVOR ============ */
+let survPct = 1;
+document.querySelectorAll('#survSeg button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#survSeg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); survPct = +b.dataset.s; calcJS();
+});
+
+// Gompertz one-year survival prob from age x. mode m, dispersion b by sex.
+function params(sex){ return sex==='m' ? {m:82,b:11.4} : {m:85,b:11.0}; }
+function pSurv1(x,sex){
+  const {m,b}=params(sex);
+  const H = Math.exp((x-m)/b)*(Math.exp(1/b)-1); // integral of hazard over [x,x+1]
+  return Math.exp(-H);
+}
+// PV of $1/yr life annuity from current age; also returns survival vectors
+function pvAnnuity(age,sex,disc){
+  let pv=0, p=1; const v=1/(1+disc);
+  for(let t=0;t<=110-age;t++){ pv += p*Math.pow(v,t); p *= pSurv1(age+t,sex); }
+  return pv;
+}
+// PV of joint-and-survivor: pays 1 while A alive, survPct to B after A dies while B alive
+function pvJointSurvivor(ageA,sexA,ageB,sexB,s,disc){
+  let pvA=0, pvSurv=0, pA=1, pB=1; const v=1/(1+disc);
+  for(let t=0;t<=110-Math.min(ageA,ageB);t++){
+    const df=Math.pow(v,t);
+    pvA += pA*df;                       // benefit to A while alive
+    pvSurv += (1-pA)*pB*s*df;           // survivor benefit: A dead, B alive
+    pA *= (ageA+t<=109)?pSurv1(ageA+t,sexA):0;
+    pB *= (ageB+t<=109)?pSurv1(ageB+t,sexB):0;
+  }
+  return pvA + pvSurv;
+}
+
+function calcJS(){
+  const single=+$('single').value||0;
+  const ageA=+$('ageA').value, sexA=$('sexA').value;
+  const ageB=+$('ageB').value, sexB=$('sexB').value;
+  const disc=(+$('disc').value||0)/100;
+  const override=$('redOverride').value;
+
+  // Actuarially fair joint payout = single * pvSingle / pvJS
+  const pvSingle = pvAnnuity(ageA,sexA,disc);
+  const pvJS = pvJointSurvivor(ageA,sexA,ageB,sexB,survPct,disc);
+  let reduction; // fraction reduction applied to single payout
+  if(override!==''&&!isNaN(+override)){ reduction=(+override)/100; }
+  else { reduction = 1 - pvSingle/pvJS; }            // fair reduction
+  reduction = Math.max(0,Math.min(reduction,0.6));
+
+  const joint = single*(1-reduction);
+  const survivor = joint*survPct;
+
+  $('jSingle').textContent = fmt(single);
+  $('jJoint').textContent  = fmt(joint);
+  $('jSurv').textContent   = fmt(survivor);
+  $('jCost').textContent   = (reduction*100).toFixed(1)+'%';
+
+  // Expected lifetime value (PV) of each option
+  const valSingle = single*12*pvSingle;
+  const valJS = joint*12*pvJointSurvivor(ageA,sexA,ageB,sexB,survPct,disc);
+  const survYears = (pvAnnuity(ageB,sexB,disc)); // rough remaining for spouse
+
+  $('jsBody').innerHTML = `
+    <tr><td>Monthly while you're alive</td><td>${fmt(single)}</td><td>${fmt(joint)}</td></tr>
+    <tr><td>Monthly to survivor after you</td><td><span class="pill warn">$0</span></td><td><span class="pill good">${fmt(survivor)}</span></td></tr>
+    <tr><td>Survivor continuation</td><td>0%</td><td>${(survPct*100)}%</td></tr>
+    <tr><td>Payout reduction</td><td>0%</td><td>${(reduction*100).toFixed(1)}%</td></tr>
+    <tr><td>Expected lifetime value (PV)</td><td>${fmt(valSingle)}</td><td>${fmt(valJS)}</td></tr>`;
+
+  const better = valJS>=valSingle;
+  $('jsNote').innerHTML =
+    `<b>What the survivor option buys:</b> if you predecease your spouse, the single-life option leaves them <b>$0</b> from this pension. The ${ (survPct*100)}% joint-and-survivor keeps <b>${fmt(survivor)}/mo</b> flowing for the rest of their life.<br><br>` +
+    `<b>Trade-off:</b> you give up <b>${fmt(single-joint)}/mo</b> (${(reduction*100).toFixed(1)}%) now. ` +
+    `On an actuarial expected-value basis the joint option is <b>${better?'worth it':'roughly break-even or slightly costly'}</b> for these ages (${fmt(valJS)} vs ${fmt(valSingle)} expected). ` +
+    `Because a surviving spouse also loses the smaller of your two Social Security checks, protecting pension income is usually the safer choice — especially when ages or health differ.` +
+    (override!==''&&!isNaN(+override)?'<br><br><span class="pill warn">Using your plan\'s stated reduction factor.</span>':'<br><br><span class="pill good">Reduction estimated to be actuarially fair — enter your plan\'s factor to compare.</span>');
+}
+
+['single','ageA','sexA','ageB','sexB','redOverride','disc'].forEach(id=>$(id).addEventListener('input',calcJS));
+
+calcSS(); calcJS();
+</script>
+</body>
+</html>
