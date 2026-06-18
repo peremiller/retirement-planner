@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Retirement Income Maximizer</title>
+<title>SSS Retirement &amp; Survivor Planner (Philippines)</title>
 <style>
   :root{
     --bg:#0c1322; --panel:#131d31; --panel2:#1b2942; --line:#27375a;
@@ -18,9 +18,17 @@
     color:var(--txt); line-height:1.5; -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1080px; margin:0 auto; padding:32px 20px 80px}
-  header h1{font-size:28px; margin:0 0 6px; letter-spacing:-.3px}
-  header p{color:var(--muted); margin:0; max-width:680px}
-  .tabs{display:flex; gap:8px; margin:28px 0 22px; flex-wrap:wrap}
+  header h1{font-size:27px; margin:0 0 6px; letter-spacing:-.3px}
+  header p{color:var(--muted); margin:0; max-width:720px}
+  .flag{font-size:22px; vertical-align:-2px}
+  .curbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin:20px 0 4px;
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px}
+  .curbar .fld{display:flex; flex-direction:column}
+  .curbar label{margin-bottom:5px}
+  .curbar select,.curbar input{min-width:120px}
+  .ratewrap{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px}
+  .ratewrap input{width:90px}
+  .tabs{display:flex; gap:8px; margin:22px 0; flex-wrap:wrap}
   .tab{
     background:var(--panel); border:1px solid var(--line); color:var(--muted);
     padding:10px 16px; border-radius:999px; cursor:pointer; font-size:14px; font-weight:600;
@@ -31,6 +39,7 @@
   .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
     padding:24px; box-shadow:var(--shadow); margin-bottom:22px}
   h2{font-size:18px; margin:0 0 4px; letter-spacing:-.2px}
+  h3{font-size:15px; margin:26px 0 2px}
   .sub{color:var(--muted); font-size:13px; margin:0 0 20px}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px}
   label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.5px;
@@ -40,16 +49,17 @@
     padding:11px 12px; border-radius:10px; font-size:15px; outline:none; transition:.15s;
   }
   input:focus,select:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(78,161,255,.15)}
+  input:disabled{opacity:.5}
   .hint{font-size:11px; color:var(--muted); margin-top:5px; text-transform:none; letter-spacing:0}
   .seg{display:flex; gap:6px; flex-wrap:wrap}
-  .seg button{flex:1; min-width:64px; background:var(--panel2); border:1px solid var(--line);
+  .seg button{flex:1; min-width:54px; background:var(--panel2); border:1px solid var(--line);
     color:var(--muted); padding:10px; border-radius:10px; cursor:pointer; font-weight:600; font-size:14px}
   .seg button.on{background:var(--accent2); border-color:var(--accent2); color:#053524}
   .out{margin-top:22px}
   .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px}
   .card{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:16px}
   .card .k{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px}
-  .card .v{font-size:24px; font-weight:700; margin-top:4px}
+  .card .v{font-size:23px; font-weight:700; margin-top:4px}
   .card.hl{background:linear-gradient(160deg,#13352a,#0f2a36); border-color:#2e6b53}
   .card.hl .v{color:var(--good)}
   table{width:100%; border-collapse:collapse; margin-top:18px; font-size:14px}
@@ -60,11 +70,10 @@
   .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:700}
   .pill.good{background:rgba(52,211,153,.18); color:var(--good)}
   .pill.warn{background:rgba(251,191,36,.18); color:var(--warn)}
-  .bar{height:10px; background:var(--panel); border-radius:6px; overflow:hidden; margin-top:8px}
-  .bar > div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2))}
   .note{background:rgba(78,161,255,.08); border:1px solid #244a73; border-radius:10px;
     padding:14px 16px; font-size:13px; color:#cdddf5; margin-top:20px}
   .note b{color:#fff}
+  .divider{border-top:1px dashed var(--line); margin:28px 0 4px}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
   .disclaimer{color:var(--muted); font-size:12px; margin-top:30px; border-top:1px solid var(--line); padding-top:18px}
   @media(max-width:560px){.row2{grid-template-columns:1fr}}
@@ -73,92 +82,154 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Retirement Income Maximizer</h1>
-    <p>Two decisions that lock in lifetime income: <b>delay Social Security to 70</b> to capture the maximum 8%/yr delayed credits, and choose a <b>joint-and-survivor annuity</b> so income continues for your spouse.</p>
+    <h1><span class="flag">🇵🇭</span> SSS Retirement &amp; Survivor Planner</h1>
+    <p>Two retirement decisions that fit the Philippine setting: <b>time your SSS pension</b> (claim at 60 or keep contributing to 65 for a bigger monthly pension), and <b>protect your spouse</b> with the SSS survivorship pension plus an optional private joint-life annuity.</p>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="ss">① Social Security — delay to 70</button>
-    <button class="tab" data-tab="js">② Joint &amp; Survivor annuity</button>
+  <div class="curbar">
+    <div class="fld">
+      <label>Display currency</label>
+      <select id="cur">
+        <option value="PHP" selected>₱ Philippine Peso (PHP)</option>
+        <option value="USD">$ US Dollar (USD)</option>
+        <option value="AED">AED UAE Dirham</option>
+        <option value="SAR">SAR Saudi Riyal</option>
+        <option value="QAR">QAR Qatari Riyal</option>
+        <option value="HKD">HK$ Hong Kong Dollar</option>
+        <option value="SGD">S$ Singapore Dollar</option>
+        <option value="JPY">¥ Japanese Yen</option>
+        <option value="KRW">₩ Korean Won</option>
+        <option value="GBP">£ British Pound</option>
+        <option value="EUR">€ Euro</option>
+        <option value="AUD">A$ Australian Dollar</option>
+        <option value="CAD">C$ Canadian Dollar</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label>Exchange rate</label>
+      <div class="ratewrap">1 <span id="curCode">PHP</span> = <input id="rate" type="number" value="1" step="0.01" disabled /> ₱</div>
+    </div>
+    <div class="fld" style="flex:1; min-width:180px">
+      <div class="hint" style="margin-top:18px">SSS benefits are paid in pesos. Pick another currency (e.g. for OFWs) to see the same amounts converted — edit the rate to today's value.</div>
+    </div>
   </div>
 
-  <!-- ================= SOCIAL SECURITY ================= -->
-  <section id="ss">
+  <div class="tabs">
+    <button class="tab active" data-tab="sss">① SSS pension — claim timing</button>
+    <button class="tab" data-tab="surv">② Survivor protection</button>
+  </div>
+
+  <!-- ================= SSS PENSION ================= -->
+  <section id="sss">
     <div class="panel">
-      <h2>Your benefit estimate</h2>
-      <p class="sub">Enter your Primary Insurance Amount (PIA) — the monthly benefit at Full Retirement Age, found on your SSA statement at ssa.gov/myaccount.</p>
+      <h2>Estimate your SSS monthly pension</h2>
+      <p class="sub">The SSS pension depends on your <b>Average Monthly Salary Credit (AMSC)</b> and your <b>Credited Years of Service (CYS)</b> — <b>not</b> on how old you are when you claim. You can take optional retirement at 60 (if separated from work) with <b>no age reduction</b>, or claim at 65. Working longer simply adds CYS, which raises the pension for life.</p>
       <div class="grid">
         <div>
-          <label>Monthly benefit at FRA (PIA)</label>
-          <input id="pia" type="number" value="2400" min="0" step="10" />
-          <div class="hint">$ per month in today's dollars</div>
+          <label>Average Monthly Salary Credit</label>
+          <input id="amsc" type="number" value="20000" min="1000" max="20000" step="500" />
+          <div class="hint">₱ — capped at ₱20,000 (regular SSS ceiling, 2025)</div>
         </div>
         <div>
-          <label>Full Retirement Age</label>
-          <select id="fra">
-            <option value="66">66 (born 1943–1954)</option>
-            <option value="66.166">66 &amp; 2 mo (1955)</option>
-            <option value="66.333">66 &amp; 4 mo (1956)</option>
-            <option value="66.5">66 &amp; 6 mo (1957)</option>
-            <option value="66.666">66 &amp; 8 mo (1958)</option>
-            <option value="66.833">66 &amp; 10 mo (1959)</option>
-            <option value="67" selected>67 (born 1960 or later)</option>
-          </select>
+          <label>Credited Years of Service at 60</label>
+          <input id="cys" type="number" value="30" min="0" max="45" step="1" />
+          <div class="hint">Years with posted contributions (need ≥10 for a pension)</div>
         </div>
         <div>
-          <label>Life expectancy (planning age)</label>
-          <input id="life" type="number" value="90" min="71" max="110" step="1" />
-          <div class="hint">How long you expect to collect</div>
-        </div>
-        <div>
-          <label>Annual COLA / discount (optional)</label>
-          <input id="cola" type="number" value="0" min="0" max="6" step="0.5" />
-          <div class="hint">% — leave 0 to compare in today's dollars</div>
+          <label>Plan to live until age</label>
+          <input id="plan" type="number" value="80" min="66" max="100" step="1" />
+          <div class="hint">PH life expectancy at 60 ≈ late 70s–80s</div>
         </div>
       </div>
 
       <div class="out">
         <div class="cards">
           <div class="card">
-            <div class="k">Claim at 62 (earliest)</div>
-            <div class="v" id="c62">—</div>
-          </div>
-          <div class="card">
-            <div class="k">Claim at FRA</div>
-            <div class="v" id="cfra">—</div>
+            <div class="k">Pension if you claim at 60</div>
+            <div class="v" id="p60">—</div>
           </div>
           <div class="card hl">
-            <div class="k">Claim at 70 (max) ★</div>
-            <div class="v" id="c70">—</div>
+            <div class="k">Pension if you work to 65</div>
+            <div class="v" id="p65">—</div>
           </div>
           <div class="card">
-            <div class="k">Monthly raise: 62 → 70</div>
-            <div class="v" id="craise">—</div>
+            <div class="k">Higher monthly pension</div>
+            <div class="v" id="pgain">—</div>
+          </div>
+          <div class="card">
+            <div class="k">13th-month pension</div>
+            <div class="v" id="p13">—</div>
           </div>
         </div>
 
-        <table id="ssTable">
+        <table id="sssTable">
           <thead>
-            <tr><th>Claim age</th><th>Adjustment</th><th>Monthly</th><th>Annual</th><th>Lifetime total*</th></tr>
+            <tr><th>Scenario</th><th>CYS</th><th>Basic pension</th><th>+ ₱1,000</th><th>Monthly</th><th>Per year ×13</th><th>To age <span id="planTh">80</span>*</th></tr>
           </thead>
           <tbody></tbody>
         </table>
 
-        <div class="note" id="ssNote"></div>
+        <div class="note" id="sssNote"></div>
       </div>
     </div>
   </section>
 
-  <!-- ================= JOINT & SURVIVOR ================= -->
-  <section id="js" style="display:none">
+  <!-- ================= SURVIVOR ================= -->
+  <section id="surv" style="display:none">
     <div class="panel">
-      <h2>Pension / annuity payout choice</h2>
-      <p class="sub">A single-life payout is largest but stops the day you die. A joint-and-survivor option pays a bit less, but a percentage continues to your spouse for life.</p>
+      <h2>What your spouse &amp; children receive (SSS survivorship)</h2>
+      <p class="sub">Unlike a US joint-and-survivor annuity, SSS survivorship is <b>automatic and free</b> — there is no payout reduction to choose. When a pensioner dies, the legal spouse receives <b>100% of the basic monthly pension</b> for life (it stops only on remarriage), and dependent children each get a <b>dependent's pension</b>.</p>
+
+      <div class="grid">
+        <div>
+          <label>Dependent minor children</label>
+          <select id="kids">
+            <option value="0">0</option><option value="1">1</option>
+            <option value="2" selected>2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5 (max)</option>
+          </select>
+          <div class="hint">Under 21, unmarried, not working — max 5 count</div>
+        </div>
+        <div>
+          <label>Pension basis</label>
+          <select id="basis">
+            <option value="60">Member retired at 60</option>
+            <option value="65" selected>Member worked to 65</option>
+          </select>
+          <div class="hint">Uses AMSC &amp; CYS from tab ①</div>
+        </div>
+      </div>
+
+      <div class="out">
+        <div class="cards">
+          <div class="card">
+            <div class="k">Spouse's monthly pension</div>
+            <div class="v" id="sSpouse">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Dependent's pension (kids)</div>
+            <div class="v" id="sKids">—</div>
+          </div>
+          <div class="card hl">
+            <div class="k">Total monthly to family</div>
+            <div class="v" id="sTotal">—</div>
+          </div>
+          <div class="card">
+            <div class="k">Per year (×13)</div>
+            <div class="v" id="sYear">—</div>
+          </div>
+        </div>
+        <div class="note" id="survNote"></div>
+      </div>
+
+      <div class="divider"></div>
+      <h3>Optional: private joint-life annuity (income above SSS)</h3>
+      <p class="sub">SSS replaces only part of your income. Many Filipinos add a <b>private annuity</b> (Sun Life, Insular, AXA, Pru Life, etc.), <b>Pag-IBIG MP2</b> savings, or a personal fund. A private annuity lets you <b>choose</b> how much continues to your spouse — the trade-off the SSS already handles for you.</p>
       <div class="row2">
         <div>
           <label>Single-life monthly payout</label>
-          <input id="single" type="number" value="3000" min="0" step="10" />
-          <div class="hint">The maximum option, ends at your death</div>
+          <input id="single" type="number" value="20000" min="0" step="500" />
+          <div class="hint">Largest option — ends at your death</div>
         </div>
         <div>
           <label>Survivor continuation</label>
@@ -167,21 +238,21 @@
             <button data-s="0.75">75%</button>
             <button class="on" data-s="1">100%</button>
           </div>
-          <div class="hint">% of your payout the survivor keeps</div>
+          <div class="hint">% of payout the survivor keeps</div>
         </div>
       </div>
       <div class="grid" style="margin-top:16px">
         <div>
           <label>Your age now</label>
-          <input id="ageA" type="number" value="65" min="50" max="90" />
+          <input id="ageA" type="number" value="60" min="45" max="85" />
         </div>
         <div>
-          <label>Your sex (for life table)</label>
+          <label>Your sex</label>
           <select id="sexA"><option value="m">Male</option><option value="f">Female</option></select>
         </div>
         <div>
           <label>Spouse age now</label>
-          <input id="ageB" type="number" value="63" min="50" max="90" />
+          <input id="ageB" type="number" value="58" min="45" max="85" />
         </div>
         <div>
           <label>Spouse sex</label>
@@ -190,15 +261,14 @@
         <div>
           <label>Plan reduction factor</label>
           <input id="redOverride" type="number" placeholder="auto" step="0.5" />
-          <div class="hint">% if your plan states it; blank = estimate</div>
+          <div class="hint">% if your insurer states it; blank = estimate</div>
         </div>
         <div>
           <label>Real discount rate</label>
-          <input id="disc" type="number" value="2" min="0" max="6" step="0.5" />
+          <input id="disc" type="number" value="3" min="0" max="8" step="0.5" />
           <div class="hint">% for present-value</div>
         </div>
       </div>
-
       <div class="out">
         <div class="cards">
           <div class="card">
@@ -218,193 +288,182 @@
             <div class="v" id="jCost">—</div>
           </div>
         </div>
-
-        <table>
-          <thead><tr><th>Measure</th><th>Single life</th><th>Joint &amp; survivor</th></tr></thead>
-          <tbody id="jsBody"></tbody>
-        </table>
-
         <div class="note" id="jsNote"></div>
       </div>
     </div>
   </section>
 
   <div class="disclaimer">
-    Educational estimates only — not financial, tax, or legal advice. Social Security factors use SSA's published reduction/delayed-credit rules. Survivor-annuity reductions are actuarial estimates from a Gompertz mortality model; your plan's actual factors govern. Confirm figures with SSA and your plan administrator.
+    Educational estimates only — not financial or legal advice. SSS pension uses the published formula (highest of: ₱300 + 20% of AMSC + 2% of AMSC × [CYS−10]; or 40% of AMSC; or the ₱1,200/₱2,400 minimum) plus the ₱1,000 additional benefit and the 13th-month pension. Actual figures depend on your posted contributions — confirm via your My.SSS account. Private-annuity reductions are actuarial estimates (Gompertz model); your insurer's quoted factors govern. Exchange rates are user-set and indicative.
   </div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
-const fmt = n => '$' + Math.round(n).toLocaleString();
-const fmt2 = n => '$' + n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+
+/* ---------- currency ---------- */
+const CUR = {
+  PHP:{sym:'₱',  rate:1},     USD:{sym:'$',  rate:56.5}, AED:{sym:'AED ',rate:15.4},
+  SAR:{sym:'SAR ',rate:15.1}, QAR:{sym:'QAR ',rate:15.5},HKD:{sym:'HK$',rate:7.2},
+  SGD:{sym:'S$', rate:42},    JPY:{sym:'¥',  rate:0.36}, KRW:{sym:'₩',  rate:0.041},
+  GBP:{sym:'£',  rate:72},    EUR:{sym:'€',  rate:61},   AUD:{sym:'A$', rate:37},
+  CAD:{sym:'C$', rate:41}
+};
+let sym='₱', phpPer=1, curCode='PHP';
+let singlePHP = 20000;           // canonical PHP value for the private-annuity payout
+
+const money = php => sym + Math.round(php/phpPer).toLocaleString();
+
+$('cur').addEventListener('change', e=>{
+  curCode = e.target.value; const c = CUR[curCode];
+  sym = c.sym; phpPer = c.rate;
+  $('curCode').textContent = curCode;
+  $('rate').value = phpPer;
+  $('rate').disabled = (curCode==='PHP');
+  $('single').value = Math.round(singlePHP/phpPer);   // re-display payout in new currency
+  calcAll();
+});
+$('rate').addEventListener('input', e=>{
+  phpPer = parseFloat(e.target.value)||1;
+  singlePHP = (parseFloat($('single').value)||0)*phpPer;
+  calcAll();
+});
 
 /* ---------- tabs ---------- */
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
-  $('ss').style.display = t.dataset.tab==='ss'?'':'none';
-  $('js').style.display = t.dataset.tab==='js'?'':'none';
+  $('sss').style.display  = t.dataset.tab==='sss'?'':'none';
+  $('surv').style.display = t.dataset.tab==='surv'?'':'none';
 });
 
-/* ============ SOCIAL SECURITY ============ */
-// Factor relative to PIA for a claiming age (years) given FRA (years).
-function ssFactor(age, fra){
-  const months = Math.round((age - fra)*12);
-  if(months === 0) return 1;
-  if(months > 0){
-    // delayed retirement credit: 8%/yr = 2/3% per month, capped at age 70
-    const m = Math.min(months, Math.round((70-fra)*12));
-    return 1 + m * (2/3)/100;
+/* ============ SSS PENSION ============ */
+// Monthly basic pension (before the +₱1,000), per SSS formula.
+function sssBasic(amsc, cys){
+  if(cys < 10) return 0;                       // no monthly pension; lump sum instead
+  const f1 = 300 + 0.20*amsc + 0.02*amsc*(cys-10);
+  const f2 = 0.40*amsc;
+  const floor = cys >= 20 ? 2400 : 1200;
+  return Math.max(f1, f2, floor);
+}
+
+function calcSSS(){
+  const amsc = Math.min(+$('amsc').value||0, 20000);
+  const cys60 = +$('cys').value||0;
+  const cys65 = cys60 + 5;                      // assume 5 more years of contributions
+  const plan = +$('plan').value||80;
+  $('planTh').textContent = plan;
+
+  const b60 = sssBasic(amsc, cys60), b65 = sssBasic(amsc, cys65);
+  const m60 = b60 ? b60+1000 : 0, m65 = b65 ? b65+1000 : 0;
+  const life = (claimAge, monthly) => monthly>0 ? monthly*13*Math.max(0, plan-claimAge) : 0;
+
+  $('p60').textContent = b60 ? money(m60) : 'Lump sum';
+  $('p65').textContent = b65 ? money(m65) : 'Lump sum';
+  $('pgain').textContent = '+'+money(m65-m60);
+  $('p13').textContent = money(m65);            // 13th-month = one monthly pension
+
+  const rows = [
+    {name:'Claim at 60', cys:cys60, b:b60, m:m60, claim:60},
+    {name:'Work to 65',  cys:cys65, b:b65, m:m65, claim:65}
+  ];
+  $('sssTable').querySelector('tbody').innerHTML = rows.map(r=>`
+    <tr class="${r.name==='Work to 65'?'best':''}">
+      <td>${r.name}${r.name==='Work to 65'?' <span class="pill good">bigger</span>':''}</td>
+      <td>${r.cys}</td>
+      <td>${r.b?money(r.b):'—'}</td>
+      <td>${r.b?money(1000):'—'}</td>
+      <td>${r.m?money(r.m):'Lump sum'}</td>
+      <td>${r.m?money(r.m*13):'—'}</td>
+      <td>${money(life(r.claim,r.m))}</td>
+    </tr>`).join('');
+
+  const qualifies = cys60>=10;
+  const gainPct = m60>0 ? ((m65/m60-1)*100).toFixed(0) : 0;
+  $('sssNote').innerHTML = qualifies
+    ? `<b>The Philippine reality:</b> SSS has <b>no early-claiming penalty</b>. Claiming at 60 pays the same formula as 65 — your pension is driven by AMSC and Credited Years, not your age. So the lever isn't "delay to 70" (a US idea); it's <b>more contribution years and a higher salary credit</b>.<br><br>` +
+      `Working from 60 to 65 adds 5 Credited Years, lifting your pension about <b>${gainPct}%</b> (${money(m60)} → ${money(m65)}/mo) <b>for life</b> — and it raises your spouse's survivor pension too. But you also collect 5 years later, so if you stop working at 60 you can claim then with no reduction. <b>Rule of thumb:</b> if you keep earning a salary past 60, let contributions build to 65; if you've stopped, claim at 60.<br><br>` +
+      `Every pension also gets the <b>₱1,000 additional benefit</b> and a <b>13th-month pension</b> each December. To go beyond the ₱20,000 ceiling, look at <b>WISP/MPF</b> and <b>Pag-IBIG MP2</b>.`
+    : `<span class="pill warn">Below 10 Credited Years</span> With fewer than 10 CYS you don't yet qualify for a monthly pension — SSS would pay a one-time <b>lump-sum benefit</b> instead. Keep contributing (voluntary contributions count) to reach 10+ years and unlock a lifetime pension.`;
+
+  return {amsc, cys60, cys65, b60, b65, m60, m65};
+}
+
+/* ============ SURVIVOR (SSS) ============ */
+function calcSurv(){
+  const s = calcSSS.last;
+  if(!s) return;
+  const basic = $('basis').value==='65' ? s.b65 : s.b60;
+  const kids = +$('kids').value||0;
+  if(basic<=0){
+    $('sSpouse').textContent=$('sKids').textContent=$('sTotal').textContent=$('sYear').textContent='—';
+    $('survNote').innerHTML = `<span class="pill warn">No monthly pension yet</span> A survivorship pension requires the member to be pension-eligible (≥10 CYS). Otherwise beneficiaries receive a lump sum.`;
+    return;
   }
-  // early reduction: 5/9% per month first 36, 5/12% per month beyond
-  const e = -months;
-  const first = Math.min(e,36);
-  const rest = Math.max(e-36,0);
-  return 1 - (first*(5/9) + rest*(5/12))/100;
+  const spouse = basic + 1000;                          // 100% of basic + ₱1,000 additional benefit
+  const perKid = Math.max(0.10*basic, 250);             // 10% of basic, min ₱250
+  const kidTotal = perKid * Math.min(kids,5);
+  const total = spouse + kidTotal;
+
+  $('sSpouse').textContent = money(spouse);
+  $('sKids').textContent = kids? money(kidTotal) : money(0);
+  $('sTotal').textContent = money(total);
+  $('sYear').textContent = money(total*13);
+
+  $('survNote').innerHTML =
+    `<b>Built-in protection:</b> your legal spouse receives <b>${money(spouse)}/month for life</b> — the full basic pension plus the ₱1,000 benefit — with <b>no reduction and nothing to elect</b>. It continues until they remarry.` +
+    (kids? ` Each of your ${Math.min(kids,5)} dependent ${Math.min(kids,5)>1?'children':'child'} adds 10% (≈${money(perKid)}), paid until they turn 21.` : ``) +
+    `<br><br>This is why the US-style "give up income now to protect your spouse later" choice doesn't apply to SSS — the survivor benefit is automatic. The real planning question is whether SSS + this survivor pension is <b>enough</b>, or whether to top it up privately (below).`;
 }
 
-function calcSS(){
-  const pia = +$('pia').value || 0;
-  const fra = +$('fra').value;
-  const life = +$('life').value || 90;
-  const cola = (+$('cola').value || 0)/100;
-  const ages = [62,63,64,65,66,67,68,69,70];
+/* ---- private joint-life annuity (Gompertz actuarial estimate) ---- */
+function params(sex){ return sex==='m' ? {m:80,b:11.4} : {m:84,b:11.0}; }   // PH-tilted modes
+function pSurv1(x,sex){ const {m,b}=params(sex);
+  return Math.exp(-(Math.exp((x-m)/b))*(Math.exp(1/b)-1)); }
+function pvAnnuity(age,sex,disc){ let pv=0,p=1,v=1/(1+disc);
+  for(let t=0;t<=110-age;t++){ pv+=p*Math.pow(v,t); p*=pSurv1(age+t,sex); } return pv; }
+function pvJS(ageA,sexA,ageB,sexB,s,disc){ let pvA=0,pvS=0,pA=1,pB=1,v=1/(1+disc);
+  for(let t=0;t<=110-Math.min(ageA,ageB);t++){ const df=Math.pow(v,t);
+    pvA+=pA*df; pvS+=(1-pA)*pB*s*df;
+    pA*=(ageA+t<=109)?pSurv1(ageA+t,sexA):0; pB*=(ageB+t<=109)?pSurv1(ageB+t,sexB):0; }
+  return pvA+pvS; }
 
-  const rows = ages.filter(a=>a>=Math.floor(fra)-5); // keep 62..70
-  // build lifetime totals with COLA growth from claim age to life expectancy
-  const lifetimeOf = (age,monthly)=>{
-    let total=0, m=monthly;
-    for(let y=age; y<life; y++){ total += m*12; m *= (1+cola); }
-    return total;
-  };
-
-  const data = ages.map(a=>{
-    const f = ssFactor(a,fra);
-    const monthly = pia*f;
-    return {a, f, monthly, annual:monthly*12, life:lifetimeOf(a,monthly)};
-  });
-
-  const at62 = data.find(d=>d.a===62);
-  const at70 = data.find(d=>d.a===70);
-  const atFra = data.reduce((p,c)=>Math.abs(c.a-fra)<Math.abs(p.a-fra)?c:p);
-
-  $('c62').textContent  = fmt(at62.monthly);
-  $('cfra').textContent = fmt(atFra.monthly);
-  $('c70').textContent  = fmt(at70.monthly);
-  $('craise').textContent = '+'+fmt(at70.monthly-at62.monthly);
-
-  const best = data.reduce((p,c)=>c.life>p.life?c:p);
-  const tb = $('ssTable').querySelector('tbody');
-  tb.innerHTML = data.map(d=>{
-    const adj = ((d.f-1)*100);
-    const adjTxt = (adj>=0?'+':'') + adj.toFixed(1) + '%';
-    return `<tr class="${d.a===best.a?'best':''}">
-      <td>${d.a}${d.a===70?' <span class="pill good">MAX</span>':''}</td>
-      <td>${adjTxt}</td>
-      <td>${fmt(d.monthly)}</td>
-      <td>${fmt(d.annual)}</td>
-      <td>${fmt(d.life)} ${d.a===best.a?'<span class="pill good">highest</span>':''}</td>
-    </tr>`;
-  }).join('');
-
-  // breakeven: 70 vs 62 (no COLA / today's dollars approximation)
-  const monthlyGain = at70.monthly - at62.monthly;
-  const forgone = at62.monthly * (70-62)*12; // checks collected 62->70
-  const beMonths = monthlyGain>0 ? forgone/monthlyGain : 0;
-  const beAge = 70 + beMonths/12;
-  const extra70 = at70.life - at62.life;
-
-  $('ssNote').innerHTML =
-    `<b>Why delay?</b> Each year you wait past your FRA adds <b>8%</b> permanent, inflation-adjusted income — there is no investment that guarantees that. Waiting from 62 to 70 raises your check by <b>${((at70.monthly/at62.monthly-1)*100).toFixed(0)}%</b> (${fmt(at62.monthly)} → ${fmt(at70.monthly)}).<br><br>` +
-    `<b>Break-even:</b> delaying from 62 to 70 pays off by about <b>age ${beAge.toFixed(0)}</b>. ` +
-    (life>=beAge
-      ? `Planning to live to ${life}, delaying to 70 yields about <b>${fmt(extra70)}</b> more lifetime${cola>0?' (COLA-adjusted)':''} — the higher base also lifts every future COLA and your survivor's benefit.`
-      : `If you truly expect to live only to ${life}, claiming earlier may collect more — but delaying still buys the best longevity &amp; survivor insurance.`);
-}
-
-['pia','fra','life','cola'].forEach(id=>$(id).addEventListener('input',calcSS));
-
-/* ============ JOINT & SURVIVOR ============ */
 let survPct = 1;
 document.querySelectorAll('#survSeg button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#survSeg button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on'); survPct = +b.dataset.s; calcJS();
+  b.classList.add('on'); survPct=+b.dataset.s; calcJS();
 });
 
-// Gompertz one-year survival prob from age x. mode m, dispersion b by sex.
-function params(sex){ return sex==='m' ? {m:82,b:11.4} : {m:85,b:11.0}; }
-function pSurv1(x,sex){
-  const {m,b}=params(sex);
-  const H = Math.exp((x-m)/b)*(Math.exp(1/b)-1); // integral of hazard over [x,x+1]
-  return Math.exp(-H);
-}
-// PV of $1/yr life annuity from current age; also returns survival vectors
-function pvAnnuity(age,sex,disc){
-  let pv=0, p=1; const v=1/(1+disc);
-  for(let t=0;t<=110-age;t++){ pv += p*Math.pow(v,t); p *= pSurv1(age+t,sex); }
-  return pv;
-}
-// PV of joint-and-survivor: pays 1 while A alive, survPct to B after A dies while B alive
-function pvJointSurvivor(ageA,sexA,ageB,sexB,s,disc){
-  let pvA=0, pvSurv=0, pA=1, pB=1; const v=1/(1+disc);
-  for(let t=0;t<=110-Math.min(ageA,ageB);t++){
-    const df=Math.pow(v,t);
-    pvA += pA*df;                       // benefit to A while alive
-    pvSurv += (1-pA)*pB*s*df;           // survivor benefit: A dead, B alive
-    pA *= (ageA+t<=109)?pSurv1(ageA+t,sexA):0;
-    pB *= (ageB+t<=109)?pSurv1(ageB+t,sexB):0;
-  }
-  return pvA + pvSurv;
-}
-
 function calcJS(){
-  const single=+$('single').value||0;
   const ageA=+$('ageA').value, sexA=$('sexA').value;
   const ageB=+$('ageB').value, sexB=$('sexB').value;
   const disc=(+$('disc').value||0)/100;
-  const override=$('redOverride').value;
+  const ov=$('redOverride').value;
+  const pS=pvAnnuity(ageA,sexA,disc), pJ=pvJS(ageA,sexA,ageB,sexB,survPct,disc);
+  let reduction = (ov!==''&&!isNaN(+ov)) ? (+ov)/100 : 1 - pS/pJ;
+  reduction = Math.max(0, Math.min(reduction,0.6));
+  const joint = singlePHP*(1-reduction), survivor = joint*survPct;
 
-  // Actuarially fair joint payout = single * pvSingle / pvJS
-  const pvSingle = pvAnnuity(ageA,sexA,disc);
-  const pvJS = pvJointSurvivor(ageA,sexA,ageB,sexB,survPct,disc);
-  let reduction; // fraction reduction applied to single payout
-  if(override!==''&&!isNaN(+override)){ reduction=(+override)/100; }
-  else { reduction = 1 - pvSingle/pvJS; }            // fair reduction
-  reduction = Math.max(0,Math.min(reduction,0.6));
-
-  const joint = single*(1-reduction);
-  const survivor = joint*survPct;
-
-  $('jSingle').textContent = fmt(single);
-  $('jJoint').textContent  = fmt(joint);
-  $('jSurv').textContent   = fmt(survivor);
+  $('jSingle').textContent = money(singlePHP);
+  $('jJoint').textContent  = money(joint);
+  $('jSurv').textContent   = money(survivor);
   $('jCost').textContent   = (reduction*100).toFixed(1)+'%';
 
-  // Expected lifetime value (PV) of each option
-  const valSingle = single*12*pvSingle;
-  const valJS = joint*12*pvJointSurvivor(ageA,sexA,ageB,sexB,survPct,disc);
-  const survYears = (pvAnnuity(ageB,sexB,disc)); // rough remaining for spouse
-
-  $('jsBody').innerHTML = `
-    <tr><td>Monthly while you're alive</td><td>${fmt(single)}</td><td>${fmt(joint)}</td></tr>
-    <tr><td>Monthly to survivor after you</td><td><span class="pill warn">$0</span></td><td><span class="pill good">${fmt(survivor)}</span></td></tr>
-    <tr><td>Survivor continuation</td><td>0%</td><td>${(survPct*100)}%</td></tr>
-    <tr><td>Payout reduction</td><td>0%</td><td>${(reduction*100).toFixed(1)}%</td></tr>
-    <tr><td>Expected lifetime value (PV)</td><td>${fmt(valSingle)}</td><td>${fmt(valJS)}</td></tr>`;
-
-  const better = valJS>=valSingle;
   $('jsNote').innerHTML =
-    `<b>What the survivor option buys:</b> if you predecease your spouse, the single-life option leaves them <b>$0</b> from this pension. The ${ (survPct*100)}% joint-and-survivor keeps <b>${fmt(survivor)}/mo</b> flowing for the rest of their life.<br><br>` +
-    `<b>Trade-off:</b> you give up <b>${fmt(single-joint)}/mo</b> (${(reduction*100).toFixed(1)}%) now. ` +
-    `On an actuarial expected-value basis the joint option is <b>${better?'worth it':'roughly break-even or slightly costly'}</b> for these ages (${fmt(valJS)} vs ${fmt(valSingle)} expected). ` +
-    `Because a surviving spouse also loses the smaller of your two Social Security checks, protecting pension income is usually the safer choice — especially when ages or health differ.` +
-    (override!==''&&!isNaN(+override)?'<br><br><span class="pill warn">Using your plan\'s stated reduction factor.</span>':'<br><br><span class="pill good">Reduction estimated to be actuarially fair — enter your plan\'s factor to compare.</span>');
+    `If you fund income <b>above SSS</b> with a private joint-life annuity, taking the single-life option leaves your spouse <b>nothing</b> from it. The ${(survPct*100)}% joint option keeps <b>${money(survivor)}/mo</b> flowing to them, costing you <b>${money(singlePHP-joint)}/mo</b> (${(reduction*100).toFixed(1)}%) now. ` +
+    (ov!==''&&!isNaN(+ov)
+      ? `<span class="pill warn">Using your insurer's stated factor.</span>`
+      : `<span class="pill good">Reduction estimated to be actuarially fair — enter your insurer's quote to compare.</span>`);
 }
 
-['single','ageA','sexA','ageB','sexB','redOverride','disc'].forEach(id=>$(id).addEventListener('input',calcJS));
+$('single').addEventListener('input', e=>{ singlePHP=(parseFloat(e.target.value)||0)*phpPer; calcJS(); });
+['ageA','sexA','ageB','sexB','redOverride','disc'].forEach(id=>$(id).addEventListener('input',calcJS));
+['kids','basis'].forEach(id=>$(id).addEventListener('change',calcSurv));
 
-calcSS(); calcJS();
+function calcAll(){ calcSSS.last = calcSSS(); calcSurv(); calcJS(); }
+['amsc','cys','plan'].forEach(id=>$(id).addEventListener('input',calcAll));
+
+calcAll();
 </script>
 </body>
 </html>
