@@ -94,7 +94,7 @@ jobs:
                 assert.notEqual(outline,'none','Keyboard focus is visible');
                 await page.locator('.tab[data-tab="surv"]').hover();
                 await page.locator('.tab[data-tab="surv"]').click();
-                assert.equal(await page.locator('.tab[data-tab="surv"]').getAttribute('aria-pressed'),'true');
+                await page.waitForFunction(()=>document.querySelector('.tab[data-tab="surv"]').getAttribute('aria-pressed')==='true');
                 assert.deepEqual(errors,[],'No page JavaScript errors');
                 await page.close();
               }
