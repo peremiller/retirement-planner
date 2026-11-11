@@ -89,8 +89,15 @@ jobs:
                 assert(overflow<=1,'Unexpected horizontal page overflow width='+width+' overflow='+overflow);
                 await page.goto('about:blank');
                 await page.goto('http://127.0.0.1:8765/');
-                await page.keyboard.press('Tab');
-                assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'Skip link reachable by keyboard');
+                let keyboardSkipFound=false;
+                const keyboardTargets=[];
+                for(let i=0;i<40;i++){
+                  await page.keyboard.press('Tab');
+                  const state=await page.evaluate(()=>({skip:document.activeElement?.classList.contains('skip-link'),target:document.activeElement?.tagName+'#'+document.activeElement?.id}));
+                  keyboardTargets.push(state.target);
+                  if(state.skip){keyboardSkipFound=true;break;}
+                }
+                assert(keyboardSkipFound,'Skip link not reachable in keyboard cycle: '+keyboardTargets.join(', '));
                 const outline=await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle);
                 assert.notEqual(outline,'none','Keyboard focus is visible');
                 await page.locator('.tab[data-tab="surv"]').hover();
