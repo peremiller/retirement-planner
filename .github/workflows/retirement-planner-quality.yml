@@ -1,0 +1,103 @@
+name: Retirement Planner Source, Offline and Browser QA
+
+on:
+  push:
+    paths:
+      - "index.html"
+      - "sw.js"
+      - "offline-assets.json"
+      - "scripts/build-offline.py"
+      - ".github/workflows/retirement-planner-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify canonical offline build is reproducible
+        run: |
+          python3 scripts/build-offline.py
+          git diff --exit-code -- index.html sw.js offline-assets.json
+      - name: Verify inline application JavaScript parses
+        run: |
+          node - <<'JS'
+          const {readFileSync}=require('node:fs');
+          const assert=require('node:assert/strict');
+          const source=readFileSync('index.html','utf8');
+          const inline=source.match(/<script>([\s\S]*?)<\/script>/);
+          assert(inline,'Inline planner script found');
+          new Function(inline[1]);
+          for(const id of ['cur','rate','amsc','cys','plan','kids','basis','single','ageA','sexA','ageB','sexB','redOverride','disc']) {
+            assert(source.includes('for="'+id+'"'), 'Accessible label for '+id);
+          }
+          assert(source.includes("addEventListener('hashchange'"),'Back/Forward navigation handled');
+          assert(source.includes('aria-pressed'),'Selected state conveyed');
+          assert(source.includes('class="table-scroll"'),'Wide table scrollable');
+          JS
+      - name: Install actual Chromium UI test dependencies
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve current app locally
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/planner-http.log 2>&1 &
+          echo $! > /tmp/planner-http.pid
+      - name: Exercise mobile, desktop, keyboard, deep links, selection and values
+        run: |
+          node - <<'JS'
+          const assert=require('node:assert/strict');
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const [width,scheme] of [[320,'dark'],[390,'light'],[1280,'dark']]){
+                const page=await browser.newPage({viewport:{width,height:800},colorScheme:scheme});
+                const errors=[];
+                page.on('pageerror',error=>errors.push(String(error)));
+                await page.goto('http://127.0.0.1:8765/#surv');
+                assert.equal(await page.locator('#surv').evaluate(el=>getComputedStyle(el).display!=='none'),true);
+                assert.equal(await page.locator('.tab[data-tab="surv"]').getAttribute('aria-pressed'),'true');
+                assert.equal(await page.locator('.tab[data-tab="sss"]').getAttribute('aria-pressed'),'false');
+                const unlabelled=await page.locator('input,select').evaluateAll(els=>els.filter(el=>!(el.labels&&el.labels.length)).map(el=>el.id));
+                assert.deepEqual(unlabelled,[],'Unlabelled controls at '+width);
+                await page.locator('#kids').selectOption('3');
+                await page.locator('.tab[data-tab="sss"]').click();
+                assert.equal(new URL(page.url()).hash,'#sss');
+                assert.equal(await page.locator('#sss').isVisible(),true);
+                await page.goBack();
+                assert.equal(await page.locator('#surv').isVisible(),true);
+                assert.equal(await page.locator('#kids').inputValue(),'3','Values preserved across navigation');
+                await page.locator('button[data-s="0.5"]').click();
+                assert.equal(await page.locator('button[data-s="0.5"]').getAttribute('aria-pressed'),'true');
+                assert.equal(await page.locator('button[data-s="1"]').getAttribute('aria-pressed'),'false');
+                await page.locator('#cur').selectOption('USD');
+                assert.equal(await page.locator('#rate').isEnabled(),true);
+                await page.locator('#cur').selectOption('PHP');
+                assert.equal(await page.locator('#rate').isDisabled(),true);
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+                assert(overflow<=1,'Unexpected horizontal page overflow width='+width+' overflow='+overflow);
+                await page.goto('http://127.0.0.1:8765/');
+                await page.keyboard.press('Tab');
+                assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'Skip link reachable by keyboard');
+                const outline=await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle);
+                assert.notEqual(outline,'none','Keyboard focus is visible');
+                await page.locator('.tab[data-tab="surv"]').hover();
+                await page.locator('.tab[data-tab="surv"]').click();
+                assert.equal(await page.locator('.tab[data-tab="surv"]').getAttribute('aria-pressed'),'true');
+                assert.deepEqual(errors,[],'No page JavaScript errors');
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          JS
