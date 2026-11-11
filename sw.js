@@ -1,4 +1,4 @@
-const CONFIG = {"app":"retirement-planner","version":"0106fed0174ff797a21f","assets":["favicon.svg","index.html","manifest.webmanifest","offline-client.js"],"pages":["index.html"],"spa":false};
+const CONFIG = {"app":"retirement-planner","version":"4ea9cb2b9b52493565be","assets":["favicon.svg","index.html","manifest.webmanifest","offline-client.js"],"pages":["index.html"],"spa":false};
 const BASE = new URL('./', self.location.href);
 const PREFIX = 'pages-offline-' + CONFIG.app + '-';
 const CACHE = PREFIX + CONFIG.version;
