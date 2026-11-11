@@ -87,6 +87,7 @@ jobs:
                 assert.equal(await page.locator('#rate').isDisabled(),true);
                 const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
                 assert(overflow<=1,'Unexpected horizontal page overflow width='+width+' overflow='+overflow);
+                await page.goto('about:blank');
                 await page.goto('http://127.0.0.1:8765/');
                 await page.keyboard.press('Tab');
                 assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'Skip link reachable by keyboard');
