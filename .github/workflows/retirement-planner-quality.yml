@@ -74,9 +74,9 @@ jobs:
                 await page.locator('#kids').selectOption('3');
                 await page.locator('.tab[data-tab="sss"]').click();
                 assert.equal(new URL(page.url()).hash,'#sss');
-                assert.equal(await page.locator('#sss').isVisible(),true);
+                await page.locator('#sss').waitFor({state:'visible'});
                 await page.goBack();
-                assert.equal(await page.locator('#surv').isVisible(),true);
+                await page.locator('#surv').waitFor({state:'visible'});
                 assert.equal(await page.locator('#kids').inputValue(),'3','Values preserved across navigation');
                 await page.locator('button[data-s="0.5"]').click();
                 assert.equal(await page.locator('button[data-s="0.5"]').getAttribute('aria-pressed'),'true');
