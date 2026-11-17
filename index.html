@@ -29,6 +29,8 @@
   .curbar select,.curbar input{min-width:120px}
   .ratewrap{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px}
   .ratewrap input{width:90px}
+  .rate-error{color:var(--bad);font-size:12px;margin-top:5px;max-width:26rem}
+  #rate[aria-invalid="true"]{border-color:var(--bad);outline-color:var(--bad)}
   .tabs{display:flex; gap:8px; margin:22px 0; flex-wrap:wrap}
   .tab{
     background:var(--panel); border:1px solid var(--line); color:var(--muted);
@@ -116,7 +118,8 @@
     </div>
     <div class="fld">
       <label for="rate">Exchange rate</label>
-      <div class="ratewrap">1 <span id="curCode">PHP</span> = <input id="rate" type="number" value="1" step="0.01" disabled /> ₱</div>
+      <div class="ratewrap">1 <span id="curCode">PHP</span> = <input id="rate" type="number" min="0.000001" value="1" step="0.01" aria-invalid="false" aria-describedby="rateHint" disabled /> ₱</div>
+      <div id="rateHint" class="rate-error" aria-live="polite"></div>
     </div>
     <div class="fld" style="flex:1; min-width:180px">
       <div class="hint" style="margin-top:18px">SSS benefits are paid in pesos. Pick another currency (e.g. for OFWs) to see the same amounts converted — edit the rate to today's value.</div>
@@ -329,11 +332,22 @@ $('cur').addEventListener('change', e=>{
   $('curCode').textContent = curCode;
   $('rate').value = phpPer;
   $('rate').disabled = (curCode==='PHP');
+  $('rate').setAttribute('aria-invalid','false');
+  $('rateHint').textContent = '';
   $('single').value = Math.round(singlePHP/phpPer);   // re-display payout in new currency
   calcAll();
 });
 $('rate').addEventListener('input', e=>{
-  phpPer = parseFloat(e.target.value)||1;
+  const draft = e.target.value.trim();
+  const parsed = Number(draft);
+  if (!draft || !Number.isFinite(parsed) || parsed <= 0) {
+    e.target.setAttribute('aria-invalid','true');
+    $('rateHint').textContent = 'Enter a positive exchange rate. Previous results are preserved.';
+    return;
+  }
+  e.target.setAttribute('aria-invalid','false');
+  $('rateHint').textContent = '';
+  phpPer = parsed;
   singlePHP = (parseFloat($('single').value)||0)*phpPer;
   calcAll();
 });
